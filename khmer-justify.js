@@ -199,6 +199,7 @@ export class TextLayer {
     return {
       ...bbox,
       groups,
+      props,
       fill() {
 
         if (props.fillStyle) {

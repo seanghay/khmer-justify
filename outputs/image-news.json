@@ -302,7 +302,17 @@
           }
         ]
       }
-    ]
+    ],
+    "props": {
+      "x": 144,
+      "y": 144,
+      "debug": true,
+      "width": 2192,
+      "font": "600 72pt Koh Santepheap, serif",
+      "fillStyle": "#15496c",
+      "textAlign": "left",
+      "lineHeight": 1.15
+    }
   },
   "body": {
     "w": 2192,
@@ -4595,6 +4605,16 @@
           }
         ]
       }
-    ]
+    ],
+    "props": {
+      "x": 144,
+      "y": 580.265625,
+      "width": 2192,
+      "font": "56pt Koh Santepheap, serif",
+      "fillStyle": "#333",
+      "textAlign": "justify",
+      "lineHeight": 1.35,
+      "debug": true
+    }
   }
 }
