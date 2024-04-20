@@ -311,7 +311,8 @@
       "font": "600 72pt Koh Santepheap, serif",
       "fillStyle": "#15496c",
       "textAlign": "left",
-      "lineHeight": 1.15
+      "lineHeight": 1.15,
+      "label": "headline"
     }
   },
   "body": {
@@ -4607,6 +4608,7 @@
       }
     ],
     "props": {
+      "label": "content",
       "x": 144,
       "y": 580.265625,
       "width": 2192,

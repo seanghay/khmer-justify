@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
-import { createCanvas } from '@napi-rs/canvas';
+import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import { TextLayer } from './khmer-justify.js';
+
+GlobalFonts.loadFontsFromDir("./fonts");
 
 const TEXT_RAW = `
 តាម​ការ​បូក​សរុប​ស្ថិតិ​បង្ហាញ​ថា កំពង់ចាម​ជាប់​ចំណាត់ថ្នាក់​លេខ​១ ជា ខេត្ត​ទទួល​អ្នក​ដើរ​លេង​ចូល​ឆ្នាំ​បួន​ថ្ងៃ​ច្រើន​ជាងគេ​ដោយ​ទទួលភ្ញៀវ​ជាង ៥​លាន​នាក់ ចំណែក​លេខ​២ បាន​ទៅ​ខេត្តព្រៃវែង ដោយ​ទទួល​បាន​ភ្ញៀវ​ជាង​២,២​លាន​នាក់ ហើយ​កំពង់ស្ពឺ​ទទួល​បាន​លេខ​៣ ដោយ​ទទួលភ្ញៀវ​បាន​ចំនួន​ជាង​២,១​លាន​នាក់ ។ នេះ​បើ​តាម​ប្រភព​មន្ទីរ​ទេសចរណ៍​រាជធានី និង​ខេត្ត​នានា ។
@@ -23,6 +25,7 @@ function render(canvas, debug = true) {
   ctx.textBaseline = 'top';
 
   const headline = new TextLayer("Text Justification Engine", {
+    label: "headline",
     font: "32pt Geist Mono, sans-serif",
     lineHeight: 1,
     fillStyle: "black",
@@ -32,6 +35,7 @@ function render(canvas, debug = true) {
   }).layout(ctx).fill();
 
   const layer = new TextLayer(TEXT_RAW, {
+    label: "body",
     font: "17pt Noto Serif Khmer, sans-serif",
     lineHeight: 1.25,
     fillStyle: "black",
@@ -44,6 +48,7 @@ function render(canvas, debug = true) {
 
   const layer2 = new TextLayer(TEXT_RAW, {
     font: "18pt Kantumruy Pro, sans-serif",
+    label: "body",
     lineHeight: 1.35,
     fillStyle: "black",
     textAlign: "justify",
@@ -55,6 +60,7 @@ function render(canvas, debug = true) {
 
   new TextLayer("---[END OF LINE]---", {
     font: "32pt Geist Mono, sans-serif",
+    label: "footer",
     lineHeight: 1,
     fillStyle: "black",
     x: layer.x,

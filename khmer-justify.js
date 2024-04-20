@@ -1,6 +1,10 @@
 const NEWLINE = '\n'
 const segmenter = new Intl.Segmenter(undefined, { granularity: "word" });
 
+const getFontHeight = (metrics) => (metrics.alphabeticBaseline * 2) + (
+  metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
+);
+
 const randomColor = (() => {
   const randint = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -53,10 +57,7 @@ export class TextLayer {
     const components = [];
     for (const { segment, isWordLike } of this.segments) {
       const metrics = ctx.measureText(segment);
-
-      const segmentHeight = (metrics.alphabeticBaseline * 2) + (
-        metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
-      );
+      const segmentHeight = getFontHeight(metrics);
 
       components.push({
         segment,
@@ -237,6 +238,21 @@ export class TextLayer {
           ctx.save()
           ctx.strokeStyle = 'magenta';
           ctx.strokeRect(bbox.x, bbox.y, bbox.w, bbox.h);
+
+          const label = props.label;
+          if (label) {
+            ctx.font = '16pt Geist Mono';
+            const m = ctx.measureText(label);
+            const h = getFontHeight(m);
+
+            ctx.fillStyle = 'rgba(255, 0, 255, 0.5)'
+            ctx.fillRect(bbox.x, bbox.y - h, m.width, h);
+            ctx.strokeRect(bbox.x, bbox.y - h, m.width, h);
+
+            ctx.fillStyle = 'white'
+            ctx.fillText(label, bbox.x, bbox.y - h + m.alphabeticBaseline * 2);
+          }
+
           ctx.restore();
         }
 

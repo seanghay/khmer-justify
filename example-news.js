@@ -35,6 +35,7 @@ function render(canvas, fill = false, debug = false) {
     fillStyle: "#15496c",
     textAlign: "left",
     lineHeight: 1.15,
+    label: "headline"
   }).layout(ctx)
 
   if (fill) {
@@ -47,6 +48,7 @@ function render(canvas, fill = false, debug = false) {
   }
 
   const body = new TextLayer($body, {
+    label: "content",
     x: padding,
     y: title.bottom + padding,
     width: canvas.width - padding * 2,
