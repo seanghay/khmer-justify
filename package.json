@@ -1,0 +1,25 @@
+{
+  "name": "khmer-justify",
+  "description": "A multiline text layout for Khmer language",
+  "type": "module",
+  "author": {
+    "name": "Seanghay Yath",
+    "email": "seanghay.dev@gmail.com",
+    "url": "https://github.com/seanghay"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "khmer",
+    "cambodia",
+    "text-justify",
+    "text-justification",
+    "khmer-text",
+    "canvas"
+  ],
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.52"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7"
+  }
+}
