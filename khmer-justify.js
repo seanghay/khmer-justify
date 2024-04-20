@@ -114,6 +114,10 @@ export class TextLayer {
 
     const groups = [];
 
+    let minOffsetWidth = Infinity;
+    let maxLineWidth = 0;
+
+
     for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
 
       const line = lines[lineNumber];
@@ -136,6 +140,10 @@ export class TextLayer {
         if (textAlign === "center") {
           offsetWidth = (maxWidth - lineWidth) / 2;
         }
+      }
+
+      if (offsetWidth < minOffsetWidth) {
+        minOffsetWidth = offsetWidth;
       }
 
       x += offsetWidth;
@@ -168,6 +176,10 @@ export class TextLayer {
         actualLineWidth += component.w;
       }
 
+      if (actualLineWidth > maxLineWidth) {
+        maxLineWidth = actualLineWidth;
+      }
+
       groups.push({
         bbox: {
           w: actualLineWidth,
@@ -187,9 +199,9 @@ export class TextLayer {
     }
 
     const bbox = {
-      w: maxWidth === Infinity ? x - props.x : maxWidth,
+      w: maxLineWidth,
       h: y - props.y,
-      x: props.x,
+      x: props.x + minOffsetWidth,
       y: props.y,
       left: props.x,
       top: props.y,
