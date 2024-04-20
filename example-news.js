@@ -68,18 +68,23 @@ function render(canvas, fill = false, debug = false) {
     ctx.strokeRect(m, m, canvas.width - m * 2, canvas.height - m * 2);
   }
 
-  return body.bottom + padding;
+  return [body.bottom + padding, {
+    title,
+    body,
+  }]
 }
 
 await fs.mkdir("outputs", { recursive: true });
 
 let canvas = createCanvas(2480, 3508);
-let h = render(canvas);
+let [h, _] = render(canvas);
 h = Math.round(h)
 
 canvas = createCanvas(2480, h);
-render(canvas, true, true);
+let [hh, state] = render(canvas, true, true);
+
 await fs.writeFile("outputs/image-news-debug.png", canvas.toBuffer("image/png"));
+await fs.writeFile("outputs/image-news.json", JSON.stringify(state, null, 2));
 
 canvas = createCanvas(2480, h);
 render(canvas, true);
