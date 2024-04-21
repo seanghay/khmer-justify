@@ -1,5 +1,6 @@
 ## Text Justify Engine
 
+<img src="./outputs/image-svg.svg">
 <img src="./outputs/image-simple-debug.png">
 <img src="./outputs/image-simple.png">
 

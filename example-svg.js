@@ -1,9 +1,7 @@
 import fs from 'node:fs/promises';
-import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
+import { createCanvas, SvgExportFlag } from '@napi-rs/canvas'
 import { TextLayer } from './khmer-justify.js';
-
-
-GlobalFonts.loadFontsFromDir("./fonts");
+import { optimize } from 'svgo';
 
 const TEXT_RAW = `
 តាម​ការ​បូក​សរុប​ស្ថិតិ​បង្ហាញ​ថា កំពង់ចាម​ជាប់​ចំណាត់ថ្នាក់​លេខ​១ ជា ខេត្ត​ទទួល​អ្នក​ដើរ​លេង​ចូល​ឆ្នាំ​បួន​ថ្ងៃ​ច្រើន​ជាងគេ​ដោយ​ទទួលភ្ញៀវ​ជាង ៥​លាន​នាក់ ចំណែក​លេខ​២ បាន​ទៅ​ខេត្តព្រៃវែង ដោយ​ទទួល​បាន​ភ្ញៀវ​ជាង​២,២​លាន​នាក់ ហើយ​កំពង់ស្ពឺ​ទទួល​បាន​លេខ​៣ ដោយ​ទទួលភ្ញៀវ​បាន​ចំនួន​ជាង​២,១​លាន​នាក់ ។ នេះ​បើ​តាម​ប្រភព​មន្ទីរ​ទេសចរណ៍​រាជធានី និង​ខេត្ត​នានា ។
@@ -13,76 +11,60 @@ const TEXT_RAW = `
 `.trim().replace(/\u200b/gm, "")
 
 
-/**
- * @param {import("@napi-rs/canvas").Canvas} canvas 
- */
-function render(canvas, debug = true) {
-  const ctx = canvas.getContext("2d");
+const debug = true;
+const canvas = createCanvas(720 * 2, 512 * 2, SvgExportFlag.ConvertTextToPaths);
+const ctx = canvas.getContext("2d");
+const gapSize = 32;
 
-  const gapSize = 32;
+ctx.fillStyle = 'hsl(45, 95%, 95%)';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.textBaseline = 'top';
 
-  ctx.fillStyle = 'hsl(45, 95%, 95%)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.textBaseline = 'top';
+const headline = new TextLayer("Text Justification Engine", {
+  label: "headline",
+  font: "32pt Geist Mono, sans-serif",
+  lineHeight: 1,
+  fillStyle: "black",
+  x: 75,
+  y: 75,
+  debug,
+}).layout(ctx).fill();
 
-  const headline = new TextLayer("Text Justification Engine", {
-    label: "headline",
-    font: "32pt Geist Mono, sans-serif",
-    lineHeight: 1,
-    fillStyle: "black",
-    x: 75,
-    y: 75,
-    debug,
-  }).layout(ctx).fill();
+const layer = new TextLayer(TEXT_RAW, {
+  label: "body",
+  font: "17pt Noto Serif Khmer, sans-serif",
+  lineHeight: 1.25,
+  fillStyle: "black",
+  textAlign: "justify",
+  width: 600,
+  x: headline.x,
+  y: headline.bottom + gapSize,
+  debug,
+}).layout(ctx).fill();
 
-  const layer = new TextLayer(TEXT_RAW, {
-    label: "body",
-    font: "17pt Noto Serif Khmer, sans-serif",
-    lineHeight: 1.25,
-    fillStyle: "black",
-    textAlign: "justify",
-    width: 600,
-    x: headline.x,
-    y: headline.bottom + gapSize,
-    debug,
-  }).layout(ctx).fill();
+const layer2 = new TextLayer(TEXT_RAW, {
+  font: "18pt Kantumruy Pro, sans-serif",
+  label: "body",
+  lineHeight: 1.35,
+  fillStyle: "black",
+  textAlign: "justify",
+  width: 700,
+  x: layer.right + gapSize,
+  y: layer.y,
+  debug,
+}).layout(ctx).fill();
 
-  const layer2 = new TextLayer(TEXT_RAW, {
-    font: "18pt Kantumruy Pro, sans-serif",
-    label: "body",
-    lineHeight: 1.35,
-    fillStyle: "black",
-    textAlign: "justify",
-    width: 700,
-    x: layer.right + gapSize,
-    y: layer.y,
-    debug,
-  }).layout(ctx).fill();
+new TextLayer("---[END OF LINE]---", {
+  font: "32pt Geist Mono, sans-serif",
+  label: "footer",
+  lineHeight: 1,
+  fillStyle: "black",
+  x: layer.x,
+  y: gapSize + Math.max(layer.bottom, layer2.bottom),
+  width: (layer.w + layer2.w + gapSize),
+  textAlign: 'center',
+  debug,
+}).layout(ctx).fill();
 
-  new TextLayer("---[END OF LINE]---", {
-    font: "32pt Geist Mono, sans-serif",
-    label: "footer",
-    lineHeight: 1,
-    fillStyle: "black",
-    x: layer.x,
-    y: gapSize + Math.max(layer.bottom, layer2.bottom),
-    width: (layer.w + layer2.w + gapSize),
-    textAlign: 'center',
-    debug,
-  }).layout(ctx).fill();  
-}
 
-console.time("render");
-let canvas = createCanvas(720 * 2, 512 * 2);
-render(canvas, true);
-console.timeEnd("render");
-
-await fs.mkdir("outputs", { recursive: true });
-await fs.writeFile("outputs/image-simple-debug.png", canvas.toBuffer("image/png"));
-
-console.time("render");
-canvas = createCanvas(720 * 2, 512 * 2);
-render(canvas, false);
-console.timeEnd("render");
-
-await fs.writeFile("outputs/image-simple.png", canvas.toBuffer("image/png"));
+await fs.writeFile("outputs/image-svg.svg", optimize(canvas.getContent().toString()).data)
