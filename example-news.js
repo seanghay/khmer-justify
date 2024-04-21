@@ -79,6 +79,7 @@ function render(canvas, fill = false, debug = false) {
 await fs.mkdir("outputs", { recursive: true });
 
 let canvas = createCanvas(2480, 3508);
+
 let [h, _] = render(canvas);
 h = Math.round(h)
 

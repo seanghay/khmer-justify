@@ -70,12 +70,21 @@ function render(canvas, debug = true) {
     textAlign: 'center',
     debug,
   }).layout(ctx).fill();  
+  return layer2
 }
 
 console.time("render");
 let canvas = createCanvas(720 * 2, 512 * 2);
-render(canvas, true);
+const l2 = render(canvas, true);
+
+const ctx = canvas.getContext('2d')
+const cropped = ctx.getImageData(l2.x, l2.y, l2.w, l2.h);
+const croppedCanvas = createCanvas(cropped.width, cropped.height);
+
+croppedCanvas.getContext('2d').putImageData(cropped, 0, 0);
+
 console.timeEnd("render");
+await fs.writeFile("outputs/example-simple-cropped.png", croppedCanvas.toBuffer("image/png"));
 
 await fs.mkdir("outputs", { recursive: true });
 await fs.writeFile("outputs/image-simple-debug.png", canvas.toBuffer("image/png"));
